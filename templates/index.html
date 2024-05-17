@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Adicionar Produtos</h2>
+<form id="produto-form">
+    <div id="produtos-input">
+        <label for="produto">Produto:</label>
+        <input type="text" id="produto" name="produto">
+    </div>
+    <button type="button" onclick="biparProduto()">Bipar Produto</button>
+</form>
+<div id="mensagem"></div>
+
+<script>
+function biparProduto() {
+    var produtoInput = document.getElementById('produto');
+    var produto = produtoInput.value.trim();
+
+    if (produto) {
+        var produtos = [produto];
+
+        fetch('/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ produtos: produtos })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                var mensagemDiv = document.getElementById('mensagem');
+                mensagemDiv.innerHTML = 'Produto bipado com sucesso!';
+                setTimeout(() => mensagemDiv.innerHTML = '', 2000);
+                produtoInput.value = '';
+                produtoInput.focus();
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao salvar o produto:', error);
+        });
+    }
+}
+
+document.getElementById('produto').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();  // Evitar a submissão do formulário
+        biparProduto();
+    }
+});
+</script>
+{% endblock %}
